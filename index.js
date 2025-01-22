@@ -46,16 +46,21 @@ app.put('/products/:id', (req, res) => {
 });
 
 app.patch('/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id);
-  const updates = req.body;
-  let product = products.find(product => product.id === productId);
-  if (product) {
-    Object.assign(product, updates);
-    res.json({ message: 'Product updated partially', product });
-  } else {
-    res.status(404).json({ error: 'Product not found' });
-  }
-});
+    const productId = parseInt(req.params.id);
+    const updates = req.body;
+    const productIndex = products.findIndex(product => product.id === productId);
+  
+    if (productIndex !== -1) {
+      const oldProduct = products[productIndex];
+      const updatedProduct = { id: oldProduct.id, ...oldProduct, ...updates };
+      products[productIndex] = updatedProduct;
+      res.json({ message: 'Product updated partially', product: updatedProduct });
+    } else {
+      res.status(404).json({ error: 'Product not found' });
+    }
+  });
+  
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
